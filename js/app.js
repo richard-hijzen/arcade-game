@@ -1,11 +1,13 @@
+var score = 0;
+document.getElementById('playerScore').innerHTML = score;
+
 // Enemies our player must avoid
-var Enemy = function(x,y) {
+var Enemy = function(x,y,speed) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
     this.x = x;
     this.y = y;
-    this.speed = 1;
-    this.speed = (Math.random() + 1) * this.speed * 200;
+    this.speed = speed;
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
     this.sprite = 'images/enemy-bug.png';
@@ -18,7 +20,18 @@ Enemy.prototype.update = function(dt) {
     // which will ensure the game runs at the same speed for
     // all computers.
     this.x += this.speed*dt;
-    this.x > 505 ? this.x = 0: this.x;
+    if(this.x > 505) {
+        this.x = 0;
+        this.speed = 100 + Math.floor(Math.random() * 200);
+    }
+
+    if(player.x <= this.x + 60 &&
+        player.x + 37 >= this.x &&
+        player.y <= this.y + 25 &&
+        player.y + 30 >= this.y) {
+            player.x = 202;
+            player.y = 415;
+        }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -48,11 +61,12 @@ Player.prototype.render = function() {
 // Place the player object in a variable called player
 
 const player = new Player();
-const enemy1 = new Enemy(202, 83);
-const enemy2 = new Enemy(202, 166);
-const enemy3 = new Enemy(202, 249);
 
-const allEnemies = [enemy1,enemy2,enemy3];
+enemy = new Enemy(0, 83, Math.floor(Math.random() + 1) * 200);
+enemy1 = new Enemy(0, 166, Math.floor(Math.random() + 1) * 200);
+enemy2 = new Enemy(0, 249, Math.floor(Math.random() + 1) * 200);
+const allEnemies = [enemy, enemy1, enemy2];
+
 
 Player.prototype.handleInput = function(input) {
     switch(input){
@@ -74,7 +88,10 @@ Player.prototype.handleInput = function(input) {
             break;
         case 'up': 
             if(this.y === 0) {
+                this.x = 202;
                 this.y = 415;
+                score++;
+                document.getElementById('playerScore').innerHTML = score;
             }
             else {
                 this.y -= 83;
